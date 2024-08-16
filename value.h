@@ -15,6 +15,7 @@ typedef struct {
     Value* values;
 } ValueArray;
 
+// memory management for ValueArray
 void init_value_array(ValueArray* array);
 void write_value_array(ValueArray* array, Value value);
 void free_value_array(ValueArray* array);
