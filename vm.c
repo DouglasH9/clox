@@ -23,6 +23,7 @@ void freeVM() {
 
 }
 
+//dynamically growing stack
 void push(Value value) {
     if (vm.stack_capacity < vm.stack_count + 1) {
         int old_capacity = vm.stack_capacity;
