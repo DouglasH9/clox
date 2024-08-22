@@ -13,7 +13,9 @@
 typedef struct {
     Chunk* chunk;
     uint8_t* ip;
-    Value stack[STACK_MAX];
+    Value* stack;
+    int stack_count;
+    int stack_capacity;
     Value* stack_top;
 } VM;
 

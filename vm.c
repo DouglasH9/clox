@@ -5,14 +5,17 @@
 #include "common.h"
 #include "vm.h"
 #include "debug.h"
+#include "memory.h"
 
 VM vm;
 
 static void reset_stack() {
-    vm.stack_top = vm.stack;
+    vm.stack_count = 0;
 }
 
 void initVM() {
+    vm.stack = NULL;
+    vm.stack_capacity = 0;
     reset_stack();
 }
 
@@ -21,13 +24,18 @@ void freeVM() {
 }
 
 void push(Value value) {
-    *vm.stack_top = value;
-    vm.stack_top++;
+    if (vm.stack_capacity < vm.stack_count + 1) {
+        int old_capacity = vm.stack_capacity;
+        vm.stack_capacity = GROW_CAPACITY(old_capacity);
+        vm.stack = GROW_ARRAY(Value, vm.stack, old_capacity, vm.stack_capacity);
+    }
+    vm.stack[vm.stack_count] = value;
+    vm.stack_count++;
 }
 
 Value pop() {
-    vm.stack_top--;
-    return *vm.stack_top;
+    vm.stack_count--;
+    return vm.stack[vm.stack_count];
 }
 
 static InterpretResult run() {
@@ -44,7 +52,7 @@ static InterpretResult run() {
     for (;;) {
 #ifdef DEBUG_TRACE_EXECUTION
         printf("             ");
-        for (Value* slot = vm.stack; slot < vm.stack_top; slot++) {
+        for (Value* slot = vm.stack; slot < vm.stack + vm.stack_count; slot++) {
             printf("[ ");
             print_value(*slot);
             printf(" ]");
